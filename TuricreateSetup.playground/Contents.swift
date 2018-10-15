@@ -11,37 +11,37 @@ public func parseTestAndTrainingFile(prefixName: String, numberOfFiles: Int, noT
 	
 	var testTextToWrite = ""
 	var trainingTextToWrite = ""
-	let noTrainingArray = createArrayFromRanges(range: noTraining)
+	let noTrainingSet = createSetFromRanges(range: noTraining)
 	
 	for i in 1...numberOfFiles {
 		switch i {
 		case 0...9:
 			testTextToWrite = testTextToWrite + prefixName + "_0000\(i)\n"
-			if !noTrainingArray.contains(i) {
+			if !noTrainingSet.contains(i) {
 				trainingTextToWrite = trainingTextToWrite + prefixName + "_0000\(i)\n"
 			}
 			
 		case 10...99:
 			testTextToWrite = testTextToWrite + prefixName + "_000\(i)\n"
-			if !noTrainingArray.contains(i)  {
+			if !noTrainingSet.contains(i)  {
 				trainingTextToWrite = trainingTextToWrite + prefixName + "_000\(i)\n"
 			}
 			
 		case 100...999:
 			testTextToWrite = testTextToWrite + prefixName + "_00\(i)\n"
-			if !noTrainingArray.contains(i) {
+			if !noTrainingSet.contains(i) {
 				trainingTextToWrite = trainingTextToWrite + prefixName + "_00\(i)\n"
 			}
 			
 		case 1000...9999:
 			testTextToWrite = testTextToWrite + prefixName + "_0\(i)\n"
-			if !noTrainingArray.contains(i) {
+			if !noTrainingSet.contains(i) {
 				trainingTextToWrite = trainingTextToWrite + prefixName + "_0\(i)\n"
 			}
 			
 		case 10000...99999:
 			testTextToWrite = testTextToWrite + prefixName + "_\(i)\n"
-			if !noTrainingArray.contains(i) {
+			if !noTrainingSet.contains(i) {
 				trainingTextToWrite = trainingTextToWrite + prefixName + "_\(i)\n"
 			}
 			
@@ -61,29 +61,29 @@ public func parseTestAndTrainingFile(prefixName: String, numberOfFiles: Int, noT
 
 
 // Utility to create [Int] of an array of ranges of Int's
-private func createArrayFromRanges(range: [Any]) -> [Int] {
+private func createSetFromRanges(range: [Any]) -> Set<Int> {
 	
-	var returnedRange = [Int]()
+	var returnedSet = Set<Int>()
 	
 	for object in range {
 		
 		switch object {
 		case is Int:
-			returnedRange.append(object as! Int)
-			
+			returnedSet.insert(object as! Int)
 		case is ClosedRange<Int>:
 			
 			let objectRange = object as! ClosedRange<Int>
 			
 			for i in objectRange {
-				returnedRange.append(i.hashValue)
+				
+				returnedSet.insert(i)
 			}
 			
 		default: break
 		}
 	}
 	
-	return returnedRange
+	return returnedSet
 }
 
 public func parseInfoFile(prefixName: String, numberOfFiles: Int, difficult:[Any], truncated: [Any], noTraining: [Any]) {
@@ -93,21 +93,20 @@ public func parseInfoFile(prefixName: String, numberOfFiles: Int, difficult:[Any
 	
 	var infoTextToWrite = ""
 	
-	
-	let difficultArray = createArrayFromRanges(range: difficult)
-	let truncatedArray = createArrayFromRanges(range: truncated)
-	let noTrainingArray = createArrayFromRanges(range: noTraining)
+	let truncatedSet = createSetFromRanges(range: truncated)
+	let difficultSet = createSetFromRanges(range: difficult)
+	let noTrainingSet = createSetFromRanges(range: noTraining)
 	
 	for i in 1...numberOfFiles {
 		
 		// parse the additional info dictionary, if there is nothing it should be an empty string
-		var additionalString = (truncatedArray.contains(i)) ? "truncated" : ""
+		var additionalString = (truncatedSet.contains(i)) ? "truncated" : ""
 		
-		if difficultArray.contains(i) {
+		if difficultSet.contains(i) {
 			additionalString = (additionalString == "") ? "difficult" : "\(additionalString) difficult"
 		}
 		
-		let trainingString = (noTrainingArray.contains(i)) ? "training" : "notraining"
+		let trainingString = (noTrainingSet.contains(i)) ? "training" : "notraining"
 		
 		switch i {
 		case 0...9:
